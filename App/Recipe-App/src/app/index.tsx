@@ -1,8 +1,9 @@
+import "../../global.css";
 import { Text, View, StyleSheet } from "react-native";
 
 export default function Index() {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className="bg-red-900">
       <Text>Edit src/app/index.tsx to edit this screen.</Text>
     </View>
   );
