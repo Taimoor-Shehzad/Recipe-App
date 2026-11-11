@@ -1,15 +1,26 @@
 import { useSignIn } from "@clerk/expo";
 import { type Href, Link, useRouter } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS } from "../../../constants/colors";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Page() {
   const { signIn, errors, fetchStatus } = useSignIn();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [code, setCode] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [passVisible, setPassVisible] = useState(false);
 
   const handleSubmit = async () => {
     const { error } = await signIn.password({
@@ -137,55 +148,79 @@ export default function Page() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign in</Text>
-
-      <Text style={styles.label}>Email address</Text>
+    <View className="bg-white flex-1 pt-16 items-center px-10 gap-3">
+      <View>
+        <Image
+          style={{ width: 300, height: 300 }}
+          source={require("@/assets/images/i1.png")}
+          resizeMode="cover"
+        />
+      </View>
+      <Text style={{ color: COLORS.text }} className="font-bold text-3xl">
+        Welcome Back
+      </Text>
       <TextInput
-        style={styles.input}
+        className="w-full border rounded-lg px-5 mt-2 mb-1.5"
+        style={{ borderColor: COLORS.border }}
         autoCapitalize="none"
         value={emailAddress}
         placeholder="Enter email"
-        placeholderTextColor="#666666"
+        placeholderTextColor={COLORS.textLight}
         onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
         keyboardType="email-address"
       />
-      {errors.fields.identifier && (
-        <Text style={styles.error}>{errors.fields.identifier.message}</Text>
-      )}
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        value={password}
-        placeholder="Enter password"
-        placeholderTextColor="#666666"
-        secureTextEntry={true}
-        onChangeText={(password) => setPassword(password)}
-      />
-      {errors.fields.password && (
-        <Text style={styles.error}>{errors.fields.password.message}</Text>
-      )}
-      <Pressable
-        style={({ pressed }) => [
-          styles.button,
-          (!emailAddress || !password || fetchStatus === "fetching") &&
-            styles.buttonDisabled,
-          pressed && styles.buttonPressed,
-        ]}
+      {/* {errors.fields.identifier && (
+        <Text style={{ color: "#d32f2f", fontSize: 12 }}>
+          {errors.fields.identifier.message}
+        </Text>
+      )} */}
+      <View
+        style={{ borderColor: COLORS.border }}
+        className="flex-row justify-center items-center w-full border gap-10 px-4 rounded-lg"
+      >
+        <TextInput
+          value={password}
+          className="flex-1"
+          placeholder="Enter password"
+          placeholderTextColor={COLORS.textLight}
+          secureTextEntry={!passVisible}
+          onChangeText={(password) => setPassword(password)}
+        />
+        <Pressable
+          onPress={() => {
+            setPassVisible(!passVisible);
+          }}
+        >
+          <Ionicons
+            name={passVisible ? "eye-outline" : "eye-off-outline"}
+            color={COLORS.textLight}
+            size={22}
+          />
+        </Pressable>
+      </View>
+      {/* {errors.fields.password && (
+        <Text style={{ color: "#d32f2f", fontSize: 12, marginTop: -6 }}>
+          {errors.fields.password.message}
+        </Text>
+      )} */}
+      <TouchableOpacity
+        style={{ backgroundColor: COLORS.primary }}
+        className="w-full justify-center items-center py-4 rounded-xl mt-4"
         onPress={handleSubmit}
         disabled={!emailAddress || !password || fetchStatus === "fetching"}
       >
-        <Text style={styles.buttonText}>Continue</Text>
-      </Pressable>
+        <Text className="color-white">Continue</Text>
+      </TouchableOpacity>
       {/* For your debugging purposes. You can just console.log errors, but we put them in the UI for convenience */}
-      {errors && (
+      {/* {errors && (
         <Text style={styles.debug}>{JSON.stringify(errors, null, 2)}</Text>
-      )}
-
-      <View style={styles.linkContainer}>
-        <Text>Dont have an account? </Text>
+      )} */}
+      <View className="flex-row">
+        <Text style={{ color: COLORS.textLight }}>Dont have an account? </Text>
         <Link href="/sign-up">
-          <Text>Sign up</Text>
+          <Text style={{ color: COLORS.text }} className="font-bold">
+            Sign up
+          </Text>
         </Link>
       </View>
     </View>
