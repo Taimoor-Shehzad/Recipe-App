@@ -17,8 +17,11 @@ export default function RootLayout() {
   }
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="sign-up" />
-      <Stack.Screen name="index" />
+      <Stack.Screen
+        options={{ animation: "slide_from_right" }}
+        name="sign-up"
+      />
+      <Stack.Screen options={{ animation: "slide_from_left" }} name="index" />
     </Stack>
   );
 }

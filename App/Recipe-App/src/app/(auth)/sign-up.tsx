@@ -2,17 +2,28 @@
 // import { View } from "@/components/themed-view";
 import { useAuth, useSignUp } from "@clerk/expo";
 import { type Href, Link, useRouter } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { COLORS } from "../../../constants/colors";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Page() {
   const { signUp, errors, fetchStatus } = useSignUp();
   const { isSignedIn } = useAuth();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [code, setCode] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [passVisible, setPassVisible] = useState(false);
 
   const handleSubmit = async () => {
     const { error } = await signUp.password({
@@ -67,20 +78,60 @@ export default function Page() {
     signUp.missingFields.length === 0
   ) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Verify your account</Text>
+      <View className="bg-white flex-1 items-center px-10 pt-16">
+        <View>
+          <Image
+            style={{ width: 300, height: 300 }}
+            source={require("@/assets/images/i3.png")}
+            resizeMode="cover"
+          />
+        </View>
+        <Text style={{ color: COLORS.text }} className="font-bold text-3xl">
+          Verify your account
+        </Text>
+        <Text
+          style={{ color: COLORS.textLight }}
+          className="text-lg leading-tight mt-6"
+        >
+          Weve sent a verifictaion code to
+        </Text>
+        <Text
+          style={{ color: COLORS.textLight }}
+          className="text-lg leading-tight mb-6"
+        >
+          example@gmail.com
+        </Text>
         <TextInput
-          style={styles.input}
+          className="w-full border rounded-lg px-5 mt-2 mb-1.5"
+          style={{ borderColor: COLORS.border }}
           value={code}
           placeholder="Enter your verification code"
-          placeholderTextColor="#666666"
+          placeholderTextColor={COLORS.textLight}
           onChangeText={(code) => setCode(code)}
           keyboardType="numeric"
         />
         {errors.fields.code && (
           <Text style={styles.error}>{errors.fields.code.message}</Text>
         )}
+        <TouchableOpacity
+          style={{ backgroundColor: COLORS.primary }}
+          className="w-full justify-center items-center py-4 rounded-xl mt-3"
+          onPress={handleVerify}
+          disabled={fetchStatus === "fetching"}
+        >
+          <Text className="color-white">Sign Up</Text>
+        </TouchableOpacity>
         <Pressable
+          onPress={() => {
+            router.back();
+          }}
+          className="mt-5"
+        >
+          <Text style={{ color: COLORS.text }} className="font-bold">
+            Back to Sign Up
+          </Text>
+        </Pressable>
+        {/* <Pressable
           style={({ pressed }) => [
             styles.button,
             fetchStatus === "fetching" && styles.buttonDisabled,
@@ -90,70 +141,85 @@ export default function Page() {
           disabled={fetchStatus === "fetching"}
         >
           <Text style={styles.buttonText}>Verify</Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.secondaryButton,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={() => signUp.verifications.sendEmailCode()}
-        >
-          <Text style={styles.secondaryButtonText}>I need a new code</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign up</Text>
+    <View className="bg-white flex-1 items-center px-10 pt-16 gap-3">
+      <View>
+        <Image
+          style={{ width: 300, height: 300 }}
+          source={require("@/assets/images/i2.png")}
+          resizeMode="cover"
+        />
+      </View>
+      <Text style={{ color: COLORS.text }} className="font-bold text-3xl">
+        Create Account
+      </Text>
 
-      <Text style={styles.label}>Email address</Text>
       <TextInput
-        style={styles.input}
+        className="w-full border rounded-lg px-5 mt-2 mb-1.5"
+        style={{ borderColor: COLORS.border }}
         autoCapitalize="none"
         value={emailAddress}
         placeholder="Enter email"
-        placeholderTextColor="#666666"
+        placeholderTextColor={COLORS.textLight}
         onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
         keyboardType="email-address"
       />
       {errors.fields.emailAddress && (
         <Text style={styles.error}>{errors.fields.emailAddress.message}</Text>
       )}
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        value={password}
-        placeholder="Enter password"
-        placeholderTextColor="#666666"
-        secureTextEntry={true}
-        onChangeText={(password) => setPassword(password)}
-      />
+      <View
+        style={{ borderColor: COLORS.border }}
+        className="flex-row justify-center items-center w-full border gap-10 px-4 rounded-lg"
+      >
+        <TextInput
+          value={password}
+          className="flex-1"
+          placeholder="Enter password"
+          placeholderTextColor={COLORS.textLight}
+          secureTextEntry={!passVisible}
+          autoCapitalize="none"
+          onChangeText={(password) => setPassword(password)}
+        />
+        <Pressable
+          onPress={() => {
+            setPassVisible(!passVisible);
+          }}
+        >
+          <Ionicons
+            name={passVisible ? "eye-outline" : "eye-off-outline"}
+            color={COLORS.textLight}
+            size={22}
+          />
+        </Pressable>
+      </View>
       {errors.fields.password && (
         <Text style={styles.error}>{errors.fields.password.message}</Text>
       )}
-      <Pressable
-        style={({ pressed }) => [
-          styles.button,
-          (!emailAddress || !password || fetchStatus === "fetching") &&
-            styles.buttonDisabled,
-          pressed && styles.buttonPressed,
-        ]}
+
+      <TouchableOpacity
+        style={{ backgroundColor: COLORS.primary }}
+        className="w-full justify-center items-center py-4 rounded-xl mt-3"
         onPress={handleSubmit}
         disabled={!emailAddress || !password || fetchStatus === "fetching"}
       >
-        <Text style={styles.buttonText}>Sign up</Text>
-      </Pressable>
+        <Text className="color-white">Sign Up</Text>
+      </TouchableOpacity>
       {/* For your debugging purposes. You can just console.log errors, but we put them in the UI for convenience */}
-      {errors && (
+      {/* {errors && (
         <Text style={styles.debug}>{JSON.stringify(errors, null, 2)}</Text>
-      )}
+      )} */}
 
-      <View style={styles.linkContainer}>
-        <Text>Already have an account? </Text>
+      <View className="flex-row">
+        <Text style={{ color: COLORS.textLight }}>Dont have an account? </Text>
         <Link href="/">
-          <Text>Sign in</Text>
+          <Text style={{ color: COLORS.text }} className="font-bold">
+            Sign up
+          </Text>
         </Link>
       </View>
 
