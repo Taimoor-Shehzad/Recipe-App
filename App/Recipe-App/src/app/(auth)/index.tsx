@@ -28,7 +28,7 @@ export default function Page() {
       password,
     });
     if (error) {
-      console.error(JSON.stringify(error, null, 2));
+      console.warn(JSON.stringify(error, null, 2));
       return;
     }
 
@@ -169,11 +169,11 @@ export default function Page() {
         onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
         keyboardType="email-address"
       />
-      {/* {errors.fields.identifier && (
-        <Text style={{ color: "#d32f2f", fontSize: 12 }}>
+      {errors.fields.identifier && (
+        <Text style={{ color: "#d32f2f", fontSize: 12, marginTop: -6 }}>
           {errors.fields.identifier.message}
         </Text>
-      )} */}
+      )}
       <View
         style={{ borderColor: COLORS.border }}
         className="flex-row justify-center items-center w-full border gap-10 px-4 rounded-lg"
@@ -198,11 +198,11 @@ export default function Page() {
           />
         </Pressable>
       </View>
-      {/* {errors.fields.password && (
+      {errors.fields.password && (
         <Text style={{ color: "#d32f2f", fontSize: 12, marginTop: -6 }}>
           {errors.fields.password.message}
         </Text>
-      )} */}
+      )}
       <TouchableOpacity
         style={{ backgroundColor: COLORS.primary }}
         className="w-full justify-center items-center py-4 rounded-xl mt-4"

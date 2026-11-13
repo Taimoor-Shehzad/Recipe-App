@@ -2,12 +2,11 @@
 // import { View } from "@/components/themed-view";
 import { useAuth, useSignUp } from "@clerk/expo";
 import { type Href, Link, useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { COLORS } from "../../../constants/colors";
 import {
   Image,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -24,6 +23,7 @@ export default function Page() {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [passVisible, setPassVisible] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
 
   const handleSubmit = async () => {
     const { error } = await signUp.password({
@@ -31,11 +31,14 @@ export default function Page() {
       password,
     });
     if (error) {
-      console.error(JSON.stringify(error, null, 2));
+      console.log(JSON.stringify(error, null, 2));
       return;
     }
 
-    if (!error) await signUp.verifications.sendEmailCode();
+    if (!error) {
+      await signUp.verifications.sendEmailCode();
+      setPendingVerification(true);
+    }
   };
 
   const handleVerify = async () => {
@@ -73,6 +76,7 @@ export default function Page() {
   }
 
   if (
+    pendingVerification &&
     signUp.status === "missing_requirements" &&
     signUp.unverifiedFields.includes("email_address") &&
     signUp.missingFields.length === 0
@@ -99,7 +103,7 @@ export default function Page() {
           style={{ color: COLORS.textLight }}
           className="text-lg leading-tight mb-6"
         >
-          example@gmail.com
+          {emailAddress}
         </Text>
         <TextInput
           className="w-full border rounded-lg px-5 mt-2 mb-1.5"
@@ -111,7 +115,9 @@ export default function Page() {
           keyboardType="numeric"
         />
         {errors.fields.code && (
-          <Text style={styles.error}>{errors.fields.code.message}</Text>
+          <Text style={{ color: "#d32f2f", fontSize: 12, marginTop: -8 }}>
+            {errors.fields.code.message}
+          </Text>
         )}
         <TouchableOpacity
           style={{ backgroundColor: COLORS.primary }}
@@ -123,7 +129,8 @@ export default function Page() {
         </TouchableOpacity>
         <Pressable
           onPress={() => {
-            router.back();
+            setPendingVerification(false);
+            setCode("");
           }}
           className="mt-5"
         >
@@ -170,7 +177,9 @@ export default function Page() {
         keyboardType="email-address"
       />
       {errors.fields.emailAddress && (
-        <Text style={styles.error}>{errors.fields.emailAddress.message}</Text>
+        <Text style={{ color: "#d32f2f", fontSize: 12, marginTop: -8 }}>
+          {errors.fields.emailAddress.message}
+        </Text>
       )}
       <View
         style={{ borderColor: COLORS.border }}
@@ -198,7 +207,9 @@ export default function Page() {
         </Pressable>
       </View>
       {errors.fields.password && (
-        <Text style={styles.error}>{errors.fields.password.message}</Text>
+        <Text style={{ color: "#d32f2f", fontSize: 12, marginTop: -8 }}>
+          {errors.fields.password.message}
+        </Text>
       )}
 
       <TouchableOpacity
@@ -231,70 +242,70 @@ export default function Page() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    gap: 12,
-  },
-  title: {
-    marginBottom: 8,
-  },
-  label: {
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: "#fff",
-  },
-  button: {
-    backgroundColor: "#0a7ea4",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonPressed: {
-    opacity: 0.7,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  secondaryButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  secondaryButtonText: {
-    color: "#0a7ea4",
-    fontWeight: "600",
-  },
-  linkContainer: {
-    flexDirection: "row",
-    gap: 4,
-    marginTop: 12,
-    alignItems: "center",
-  },
-  error: {
-    color: "#d32f2f",
-    fontSize: 12,
-    marginTop: -8,
-  },
-  debug: {
-    fontSize: 10,
-    opacity: 0.5,
-    marginTop: 8,
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     gap: 12,
+//   },
+//   title: {
+//     marginBottom: 8,
+//   },
+//   label: {
+//     fontWeight: "600",
+//     fontSize: 14,
+//   },
+//   input: {
+//     borderWidth: 1,
+//     borderColor: "#ccc",
+//     borderRadius: 8,
+//     padding: 12,
+//     fontSize: 16,
+//     backgroundColor: "#fff",
+//   },
+//   button: {
+//     backgroundColor: "#0a7ea4",
+//     paddingVertical: 12,
+//     paddingHorizontal: 24,
+//     borderRadius: 8,
+//     alignItems: "center",
+//     marginTop: 8,
+//   },
+//   buttonPressed: {
+//     opacity: 0.7,
+//   },
+//   buttonDisabled: {
+//     opacity: 0.5,
+//   },
+//   buttonText: {
+//     color: "#fff",
+//     fontWeight: "600",
+//   },
+//   secondaryButton: {
+//     paddingVertical: 12,
+//     paddingHorizontal: 24,
+//     borderRadius: 8,
+//     alignItems: "center",
+//     marginTop: 8,
+//   },
+//   secondaryButtonText: {
+//     color: "#0a7ea4",
+//     fontWeight: "600",
+//   },
+//   linkContainer: {
+//     flexDirection: "row",
+//     gap: 4,
+//     marginTop: 12,
+//     alignItems: "center",
+//   },
+//   error: {
+//     color: "#d32f2f",
+//     fontSize: 12,
+//     marginTop: -8,
+//   },
+//   debug: {
+//     fontSize: 10,
+//     opacity: 0.5,
+//     marginTop: 8,
+//   },
+// });
