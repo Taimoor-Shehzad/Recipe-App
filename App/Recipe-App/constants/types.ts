@@ -26,3 +26,10 @@ export interface Meal {
   strArea: string;
   strCountry: string;
 }
+
+export interface CategorySelect {
+  id: number;
+  name: string;
+  image: string;
+  description: string;
+}

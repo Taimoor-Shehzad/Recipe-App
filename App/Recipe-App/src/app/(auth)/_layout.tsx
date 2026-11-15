@@ -6,7 +6,7 @@ export default function RootLayout() {
   const { isSignedIn, isLoaded } = useAuth();
 
   if (isSignedIn) {
-    return <Redirect href="../(tabs)/favourites" />;
+    return <Redirect href="../(tabs)/recipies" />;
   }
   if (!isLoaded) {
     return (
