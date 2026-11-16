@@ -27,7 +27,9 @@ cssInterop(Image, { className: "style" });
 
 const Recipies = () => {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    "Popular Recipies",
+  );
   const [recipes, setRecipes] = useState<TransformedCategory[]>([]);
   const [categories, setCategories] = useState<CategorySelect[]>([]);
   const [featuredRecipe, setFeaturedRecipe] =
@@ -86,7 +88,7 @@ const Recipies = () => {
       // const transformedMeals = detailedMeals
       //   .map((meal) => MealAPI.transformMealData(meal))
       //   .filter((meal) => meal !== null);
-        setRecipes(transformedMeals);
+      setRecipes(transformedMeals);
     } catch (error) {
       console.error("Error loading category data:", error);
       setRecipes([]);
@@ -109,7 +111,7 @@ const Recipies = () => {
   };
 
   if (loading && !refreshing)
-    return <LoadingSpinner message="Loading delicions recipes..." />;
+    return <LoadingSpinner message="Loading delicious recipes..." />;
 
   return (
     <View
@@ -247,7 +249,11 @@ const Recipies = () => {
             keyExtractor={(item) => item.id.toString()}
             numColumns={2}
             columnWrapperStyle={{ justifyContent: "space-evenly", gap: 16 }}
-            contentContainerStyle={{ gap: 16, paddingVertical: 10 }}
+            contentContainerStyle={{
+              gap: 16,
+              paddingVertical: 10,
+              paddingBottom: 30,
+            }}
             scrollEnabled={false}
           />
         ) : (

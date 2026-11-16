@@ -22,6 +22,7 @@ export default function Page() {
   const [code, setCode] = useState("");
   const [passVisible, setPassVisible] = useState(false);
 
+  const [pendingVerification, setPendingVerification] = useState(false);
   const handleSubmit = async () => {
     const { error } = await signIn.password({
       emailAddress,
@@ -62,6 +63,7 @@ export default function Page() {
 
       if (emailCodeFactor) {
         await signIn.mfa.sendEmailCode();
+        setPendingVerification(true);
       }
     } else {
       // Check why the sign-in is not complete
@@ -97,24 +99,65 @@ export default function Page() {
     }
   };
 
-  if (signIn.status === "needs_client_trust") {
+  if (signIn.status === "needs_client_trust" && pendingVerification) {
     return (
-      <View style={styles.container}>
-        <Text style={[styles.title, { fontSize: 24, fontWeight: "bold" }]}>
+      <View className="bg-white flex-1 items-center px-10 pt-16">
+        <View>
+          <Image
+            style={{ width: 300, height: 300 }}
+            source={require("@/assets/images/i3.png")}
+            resizeMode="cover"
+          />
+        </View>
+        <Text style={{ color: COLORS.text }} className="font-bold text-3xl">
           Verify your account
         </Text>
+        <Text
+          style={{ color: COLORS.textLight }}
+          className="text-lg leading-tight mt-6"
+        >
+          Weve sent a verifictaion code to
+        </Text>
+        <Text
+          style={{ color: COLORS.textLight }}
+          className="text-lg leading-tight mb-6"
+        >
+          {emailAddress}
+        </Text>
         <TextInput
-          style={styles.input}
+          className="w-full border rounded-lg px-5 mt-2 mb-1.5"
+          style={{ borderColor: COLORS.border }}
           value={code}
           placeholder="Enter your verification code"
-          placeholderTextColor="#666666"
+          placeholderTextColor={COLORS.textLight}
           onChangeText={(code) => setCode(code)}
           keyboardType="numeric"
         />
         {errors.fields.code && (
-          <Text style={styles.error}>{errors.fields.code.message}</Text>
+          <Text style={{ color: "#d32f2f", fontSize: 12, marginTop: -8 }}>
+            {errors.fields.code.message}
+          </Text>
         )}
+        <TouchableOpacity
+          style={{ backgroundColor: COLORS.primary }}
+          className="w-full justify-center items-center py-4 rounded-xl mt-3"
+          onPress={handleVerify}
+          disabled={fetchStatus === "fetching"}
+        >
+          <Text className="color-white">Sign In</Text>
+        </TouchableOpacity>
         <Pressable
+          onPress={() => {
+            setPendingVerification(false);
+            setCode("");
+          }}
+          className="mt-5"
+        >
+          <Text style={{ color: COLORS.text }} className="font-bold">
+            Back to Sign In
+          </Text>
+        </Pressable>
+        {/* <Pressable
           style={({ pressed }) => [
             styles.button,
             fetchStatus === "fetching" && styles.buttonDisabled,
@@ -124,25 +167,7 @@ export default function Page() {
           disabled={fetchStatus === "fetching"}
         >
           <Text style={styles.buttonText}>Verify</Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.secondaryButton,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={() => signIn.mfa.sendEmailCode()}
-        >
-          <Text style={styles.secondaryButtonText}>I need a new code</Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.secondaryButton,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={() => signIn.reset()}
-        >
-          <Text style={styles.secondaryButtonText}>Start over</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     );
   }
@@ -226,71 +251,3 @@ export default function Page() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    gap: 12,
-  },
-  title: {
-    marginBottom: 8,
-  },
-  label: {
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: "#fff",
-  },
-  button: {
-    backgroundColor: "#0a7ea4",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonPressed: {
-    opacity: 0.7,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  secondaryButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  secondaryButtonText: {
-    color: "#0a7ea4",
-    fontWeight: "600",
-  },
-  linkContainer: {
-    flexDirection: "row",
-    gap: 4,
-    marginTop: 12,
-    alignItems: "center",
-  },
-  error: {
-    color: "#d32f2f",
-    fontSize: 12,
-    marginTop: -8,
-  },
-  debug: {
-    fontSize: 10,
-    opacity: 0.5,
-    marginTop: 8,
-  },
-});

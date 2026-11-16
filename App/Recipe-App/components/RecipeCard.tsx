@@ -21,6 +21,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         source={{ uri: recipe.image }}
         style={{ height: 120, width: "100%" }}
         contentFit="cover"
+        transition={300}
       />
       <View className="px-2 py-2 gap-1 justify-between">
         <Text
