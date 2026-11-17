@@ -33,3 +33,14 @@ export interface CategorySelect {
   image: string;
   description: string;
 }
+
+export interface FavouritesType {
+  id: number;
+  userId: string;
+  recipeId: number;
+  title: string;
+  image: string;
+  cookTime: string;
+  servings: string;
+  createdAt: string;
+}
