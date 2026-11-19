@@ -156,8 +156,19 @@ const RecipeDetailScreen = () => {
           <TouchableOpacity
             style={{ backgroundColor: COLORS.primary }}
             className="rounded-full p-3 justify-center items-center"
+            onPress={handleToggleSave}
           >
-            <Ionicons name="bookmark-outline" size={22} color={COLORS.white} />
+            <Ionicons
+              name={
+                isSaving
+                  ? "hourglass"
+                  : isSaved
+                    ? "bookmark"
+                    : "bookmark-outline"
+              }
+              size={22}
+              color={COLORS.white}
+            />
           </TouchableOpacity>
         </View>
         {/* Recipe Overview */}
@@ -400,6 +411,7 @@ const RecipeDetailScreen = () => {
         <TouchableOpacity
           className="rounded-xl w-full mt-6 overflow-hidden"
           disabled={isSaving}
+          onPress={handleToggleSave}
         >
           <LinearGradient
             colors={[COLORS.primary, COLORS.primary + "CC"]}
@@ -407,7 +419,7 @@ const RecipeDetailScreen = () => {
           >
             <Ionicons name="heart" color={COLORS.white} size={22} />
             <Text style={{ color: COLORS.white }} className="font-bold text-xl">
-              Add to favourites
+              {isSaved ? "Remove from favourites" : "Add to favourites"}
             </Text>
           </LinearGradient>
         </TouchableOpacity>

@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, Alert, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  FlatList,
+  RefreshControl,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAuth, useUser } from "@clerk/expo";
 import { BASE_API_URL } from "../../../constants/api";
@@ -18,29 +25,37 @@ const Favourites = () => {
     [],
   );
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefresing] = useState(false);
+
+  const loadFavourites = async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/favourites/${user?.id}`);
+      if (!response) throw new Error("Failed to fetch favourites");
+      const favourites = await response.json();
+      const transformedFavourites = favourites.map(
+        (favourite: FavouritesType) => ({
+          ...favourite,
+          id: favourite.recipeId,
+        }),
+      );
+      setFavoriteRecipes(transformedFavourites);
+    } catch (error) {
+      console.log("Error loading favorites", error);
+      Alert.alert("Error", "Failed to load favorites");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadFavourites = async () => {
-      try {
-        const response = await fetch(`${BASE_API_URL}/favourites/${user?.id}`);
-        if (!response) throw new Error("Failed to fetch favourites");
-        const favourites = await response.json();
-        const transformedFavourites = favourites.map(
-          (favourite: FavouritesType) => ({
-            ...favourite,
-            id: favourite.recipeId,
-          }),
-        );
-        setFavoriteRecipes(transformedFavourites);
-      } catch (error) {
-        console.log("Error loading favorites", error);
-        Alert.alert("Error", "Failed to load favorites");
-      } finally {
-        setLoading(false);
-      }
-    };
     loadFavourites();
   }, [user?.id]);
+
+  const onRefresh = async () => {
+    setRefresing(true);
+    await loadFavourites();
+    setRefresing(false);
+  };
 
   const handleSignOut = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -54,7 +69,7 @@ const Favourites = () => {
   return (
     <View
       style={{ backgroundColor: COLORS.background, paddingTop: 18 }}
-      className="flex-1 px-6"
+      className="flex-1 px-6 py-10"
     >
       {/* Favourites Section Header */}
       <View className="flex-row w-full justify-between items-center">
@@ -75,7 +90,11 @@ const Favourites = () => {
           data={favoriteRecipes}
           renderItem={({ item }) => <RecipeCard recipe={item} />}
           keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
           numColumns={2}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           columnWrapperStyle={{ justifyContent: "space-evenly", gap: 16 }}
           contentContainerStyle={{
             gap: 16,
