@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 export default function Page() {
   const { signUp, errors, fetchStatus } = useSignUp();
@@ -24,6 +25,7 @@ export default function Page() {
   const [code, setCode] = useState("");
   const [passVisible, setPassVisible] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const handleSubmit = async () => {
     const { error } = await signUp.password({
@@ -42,9 +44,11 @@ export default function Page() {
   };
 
   const handleVerify = async () => {
+    setIsVerifying(true);
     await signUp.verifications.verifyEmailCode({
       code,
     });
+
     if (signUp.status === "complete") {
       await signUp.finalize({
         // Redirect the user to the home page after signing up
@@ -65,15 +69,19 @@ export default function Page() {
           }
         },
       });
+      setIsVerifying(false);
     } else {
       // Check why the sign-up is not complete
       console.error("Sign-up attempt not complete:", signUp);
+      setIsVerifying(false);
     }
   };
 
   if (signUp.status === "complete" || isSignedIn) {
     return null;
   }
+
+  if (isVerifying) return <LoadingSpinner message="Verifying..." />;
 
   if (
     pendingVerification &&

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { COLORS } from "../../../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 export default function Page() {
   const { signIn, errors, fetchStatus } = useSignIn();
@@ -21,6 +22,7 @@ export default function Page() {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [passVisible, setPassVisible] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const [pendingVerification, setPendingVerification] = useState(false);
   const handleSubmit = async () => {
@@ -75,6 +77,7 @@ export default function Page() {
     await signIn.mfa.verifyEmailCode({ code });
 
     if (signIn.status === "complete") {
+      setIsVerifying(true);
       await signIn.finalize({
         navigate: ({ session, decorateUrl }) => {
           // Handle session tasks
@@ -93,11 +96,15 @@ export default function Page() {
           }
         },
       });
+      setIsVerifying(false);
     } else {
       // Check why the sign-in is not complete
       console.error("Sign-in attempt not complete:", signIn);
+      setIsVerifying(false);
     }
   };
+
+  if (isVerifying) return <LoadingSpinner message="Verifying..." />;
 
   if (signIn.status === "needs_client_trust" && pendingVerification) {
     return (
