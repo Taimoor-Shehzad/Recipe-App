@@ -18,11 +18,11 @@ import {
 import { COLORS } from "../../../constants/colors";
 import { Image } from "expo-image";
 // for nativewind classes usage in expo image
-import { cssInterop } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
 import Categories from "../../../components/Categories";
 import RecipeCard from "../../../components/RecipeCard";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import { cssInterop } from "nativewind";
 cssInterop(Image, { className: "style" });
 
 const Recipies = () => {
@@ -164,6 +164,9 @@ const Recipies = () => {
                 shadowOpacity: 0.2,
                 shadowRadius: 16,
                 elevation: 12,
+              }}
+              onPress={() => {
+                router.push(`/recipe/${featuredRecipe.id}`);
               }}
             >
               <View

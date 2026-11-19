@@ -5,6 +5,7 @@ import { COLORS } from "../constants/colors";
 import { TransformedCategory } from "../constants/types";
 import { cssInterop } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 cssInterop(Image, { className: "style" });
 
 interface RecipeCardProps {
@@ -16,6 +17,9 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
     <TouchableOpacity
       style={{ backgroundColor: COLORS.white, width: 140 }}
       className="rounded-xl overflow-hidden elevation-lg"
+      onPress={() => {
+        router.push(`/recipe/${recipe.id}`);
+      }}
     >
       <Image
         source={{ uri: recipe.image }}

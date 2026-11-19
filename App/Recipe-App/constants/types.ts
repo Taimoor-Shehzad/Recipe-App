@@ -44,3 +44,18 @@ export interface FavouritesType {
   servings: string;
   createdAt: string;
 }
+
+export interface RecipeWithVideoUrl {
+  youtubeUrl: any;
+  id?: any;
+  title?: any;
+  description?: string | undefined;
+  image?: any;
+  cookTime?: string | undefined;
+  servings?: number | undefined;
+  category?: any;
+  area?: any;
+  ingredients?: string[] | undefined;
+  instructions?: any;
+  originalData?: any;
+}
